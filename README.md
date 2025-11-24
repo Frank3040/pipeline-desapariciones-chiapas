@@ -56,7 +56,7 @@ Sigue estos pasos para levantar el proyecto desde cero en tu máquina local.
     ```
     dags/data/raw/base-desapariciones-dataton-2025.csv
     ```
-    *(Si no tienes el archivo, colócalo en esa ruta antes de continuar).*
+    *(Si no tienes el archivo, descargalo de la fuente original proporcionada y colócalo en esa ruta antes de continuar).*
 
 3.  **Iniciar los Servicios**
     Construye y levanta los contenedores:
@@ -91,3 +91,8 @@ pipeline_missing_kids/
 ├── Dockerfile              # Imagen personalizada de Airflow
 └── init-scripts/           # Scripts de inicialización de BD
 ```
+
+## Resultados
+
+![Dashboard](/screenshots/dashboard.png)
+
