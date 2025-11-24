@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Desapariciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            border-left: 5px solid #0d6efd;
+            transition: transform 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .kpi-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+
+        /* Uniform Chart Sizing */
+        .chart-card {
+            height: 100%;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            /* Fixed height enforces uniformity */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-title {
+            color: #343a40;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid px-4 py-5">
+        <h1 class="mb-5 text-center fw-bold text-primary">Dashboard de Monitoreo: Desapariciones de Niños en Chiapas
+        </h1>
+
+        <!-- KPIs -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card p-4 kpi-card">
+                    <div class="kpi-label">Total de Casos Registrados</div>
+                    <div class="kpi-value" id="kpi-total">Cargando...</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 kpi-card" style="border-left-color: #198754;">
+                    <div class="kpi-label">Tasa de Localización</div>
+                    <div class="kpi-value text-success" id="kpi-rate">Cargando...</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 kpi-card" style="border-left-color: #dc3545;">
+                    <div class="kpi-label">Municipio con Mayor Incidencia</div>
+                    <div class="kpi-value text-danger" id="kpi-top" style="font-size: 1.8rem;">Cargando...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="row mb-4">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="card p-4 chart-card">
+                    <h5 class="card-title">Tendencia Histórica de Desapariciones</h5>
+                    <div class="chart-container">
+                        <canvas id="chartYear"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card p-4 chart-card">
+                    <h5 class="card-title">Distribución Demográfica por Sexo</h5>
+                    <div class="chart-container">
+                        <canvas id="chartSex"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="card p-4 chart-card">
+                    <h5 class="card-title">Análisis de Casos por Grupo Etario</h5>
+                    <div class="chart-container">
+                        <canvas id="chartAge"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card p-4 chart-card">
+                    <h5 class="card-title">Estado Actual de Búsqueda</h5>
+                    <div class="chart-container">
+                        <canvas id="chartStatus"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Common options for all charts to ensure uniformity
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 12, padding: 20 }
+                }
+            },
+            layout: { padding: 10 }
+        };
+
+        async function fetchData() {
+            try {
+                // Fetch KPIs
+                const kpiRes = await fetch('/api/kpis');
+                const kpis = await kpiRes.json();
+                document.getElementById('kpi-total').innerText = kpis.total_cases.toLocaleString();
+                document.getElementById('kpi-rate').innerText = kpis.localization_rate;
+                document.getElementById('kpi-top').innerText = kpis.top_municipio;
+
+                // Fetch Charts
+                const chartRes = await fetch('/api/charts');
+                const data = await chartRes.json();
+
+                // Chart 1: Year Trend (Line)
+                new Chart(document.getElementById('chartYear'), {
+                    type: 'line',
+                    data: {
+                        labels: data.year_trend.labels,
+                        datasets: [{
+                            label: 'Número de Casos',
+                            data: data.year_trend.data,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+
+                // Chart 2: Sex (Pie) - Use Doughnut for modern look
+                new Chart(document.getElementById('chartSex'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.sex_dist.labels,
+                        datasets: [{
+                            data: data.sex_dist.data,
+                            backgroundColor: ['#ff6384', '#36a2eb', '#ffce56'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: commonOptions
+                });
+
+                // Chart 3: Age (Bar)
+                new Chart(document.getElementById('chartAge'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.age_dist.labels,
+                        datasets: [{
+                            label: 'Casos Registrados',
+                            data: data.age_dist.data,
+                            backgroundColor: '#20c997',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+
+                // Chart 4: Status (Doughnut)
+                new Chart(document.getElementById('chartStatus'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.status_dist.labels,
+                        datasets: [{
+                            data: data.status_dist.data,
+                            backgroundColor: ['#198754', '#dc3545', '#ffc107'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: commonOptions
+                });
+
+            } catch (error) {
+                console.error("Error loading dashboard data:", error);
+            }
+        }
+
+        // Initialize
+        fetchData();
+    </script>
+</body>
+
+</html>
