@@ -94,5 +94,6 @@ pipeline_missing_kids/
 
 ## Resultados
 
-![Dashboard](/screenshots/dashboard.png)
+![Dashboard Parte 1](/screenshots/dashboard.png)
+![Dashboard Parte 2](/screenshots/dashboard-parte2.png)
 
