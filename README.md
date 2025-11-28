@@ -1,6 +1,6 @@
 # Pipeline de Datos: Desapariciones de Niños, Niñas y Adolescentes en Chiapas
 
-Este proyecto implementa un pipeline ELT (Extract, Load, Transform) completo y un dashboard interactivo para analizar datos sobre desapariciones de niños, niñas y adolescentes en Chiapas, México. El sistema está contenerizado utilizando Docker y orquestado mediante Apache Airflow, con PostgreSQL como base de datos y Flask para la visualización.
+Este proyecto implementa un pipeline ETL (Extract, Transform, Load) completo y un dashboard interactivo para analizar datos sobre desapariciones de niños, niñas y adolescentes en Chiapas, México. El sistema está contenerizado utilizando Docker y orquestado mediante Apache Airflow, con PostgreSQL como base de datos y Flask para la visualización.
 
 ## Contexto del Dataset
 
@@ -23,8 +23,9 @@ Analizar estos datos beneficia a comunidades y familias al proporcionarles infor
 
 El proyecto utiliza una arquitectura moderna basada en contenedores:
 
-1.  **Orquestación (Apache Airflow):** Gestiona el flujo de trabajo ELT.
+1.  **Orquestación (Apache Airflow):** Gestiona el flujo de trabajo ETL.
     *   **Sensor:** Detecta la llegada de nuevos archivos de datos.
+    *   **Preparación**: Prepara los datos para ser cargados. Pequeña transformación.
     *   **Carga:** Ingesta datos crudos CSV a PostgreSQL (`schema: raw`).
     *   **Transformación:** Limpieza y normalización de datos mediante SQL (`schema: processed`).
     *   **Modelado:** Creación de vistas analíticas (`schema: trusted`).
@@ -84,7 +85,7 @@ pipeline_missing_kids/
 │   │   ├── templates/      # HTML del dashboard
 │   │   └── app.py          # Backend del dashboard
 │   ├── data/raw/           # Directorio de entrada de datos
-│   ├── scripts/            # Scripts Python para tareas ELT
+│   ├── scripts/            # Scripts Python para tareas ETL
 │   ├── sql/                # Scripts SQL (DDL y Transformaciones)
 │   └── dag.py              # Definición del DAG de Airflow
 ├── docker-compose.yaml     # Definición de servicios Docker
