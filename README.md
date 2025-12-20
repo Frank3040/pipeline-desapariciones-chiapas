@@ -1,6 +1,6 @@
 # Pipeline de Datos: Desapariciones de Niños, Niñas y Adolescentes en Chiapas
 
-Este proyecto implementa un pipeline ETL (Extract, Transform, Load) completo y un dashboard interactivo para analizar datos sobre desapariciones de niños, niñas y adolescentes en Chiapas, México. El sistema está contenerizado utilizando Docker y orquestado mediante Apache Airflow, con PostgreSQL como base de datos y Flask para la visualización.
+Este proyecto implementa un pipeline ELT (Extract, Load and Transform) completo y un dashboard interactivo para analizar datos sobre desapariciones de niños, niñas y adolescentes en Chiapas, México. El sistema está contenerizado utilizando Docker y orquestado mediante Apache Airflow, con PostgreSQL como base de datos y Flask para la visualización.
 
 ## Contexto del Dataset
 
