@@ -20,8 +20,6 @@ USER airflow
 
 COPY --chown=airflow:root requirements.txt /tmp/requirements.txt
 
-RUN pip uninstall -y apache-airflow-providers-git || true
-
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 ENV PROJECT_ROOT="/opt/airflow/"
