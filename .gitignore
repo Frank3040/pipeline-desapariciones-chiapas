@@ -41,7 +41,7 @@ unittests.cfg
 docker-compose.override.yml
 
 # Project Data (Do not commit real data)
-dags/data/raw/*.csv
+#dags/data/raw/*.csv
 dags/data/processed/*.csv
 !dags/data/raw/.gitkeep
 
