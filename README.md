@@ -15,8 +15,6 @@ El análisis de estos datos permite abordar la falta de información centralizad
 ### Beneficiarios
 Analizar estos datos beneficia a comunidades y familias al proporcionarles información transparente sobre su entorno; a los organismos gubernamentales les brinda insumos para decisiones basadas en evidencia y una mejor asignación de recursos de seguridad; a ONGs y colectivos de búsqueda les ofrece herramientas que fundamentan sus demandas y focalizan sus acciones; y a la sociedad civil le genera mayor conciencia sobre la problemática.
 
-
-
 ## Arquitectura del Proyecto
 
 ![Arquitectura del proyecto](/screenshots/pipeline_diagram.jpg)
@@ -34,9 +32,25 @@ El proyecto utiliza una arquitectura moderna basada en contenedores:
 3.  **Visualización (Flask + Chart.js):** Dashboard web que consume las vistas confiables para mostrar KPIs y gráficos en tiempo real.
 4.  **Infraestructura (Docker):** Todo el entorno se despliega mediante `docker-compose`.
 
+## Estructura del Proyecto
 
+```
+pipeline_missing_kids/
+├── dags/
+│   ├── dashboard/          # Código de la aplicación Flask
+│   │   ├── templates/      # HTML del dashboard
+│   │   └── app.py          # Backend del dashboard
+│   ├── data/raw/           # Directorio de entrada de datos
+│   ├── scripts/            # Scripts Python para tareas ETL
+│   ├── sql/                # Scripts SQL (DDL y Transformaciones)
+│   └── dag.py              # Definición del DAG de Airflow
+├── docker-compose.yaml     # Definición de servicios Docker
+├── .env.example            # variables de entorno de ejemplo
+├── Dockerfile              # Imagen personalizada de Airflow
+└── init-scripts/           # Scripts de inicialización de BD
+```
 
-## Instrucciones de Reproducción
+## Instrucciones para la reproducción de este proyecto
 
 Sigue estos pasos para levantar el proyecto desde cero en tu máquina local.
 
@@ -51,49 +65,38 @@ Sigue estos pasos para levantar el proyecto desde cero en tu máquina local.
     git clone <url-del-repositorio>
     cd pipeline_missing_kids
     ```
-
-2.  **Preparar los Datos**
+2. **Copiar archivo env**
+    Copia el archivo `.env.example` a `.env` y ajusta las variables de entorno según sea necesario.
+    ```bash
+    cp .env.example .env
+    ```
+3.  **Preparar los Datos**
     Asegúrate de que el archivo de datos fuente esté en la ubicación correcta. El pipeline espera encontrar el archivo `base-desapariciones-dataton-2025.csv` en:
     ```
     dags/data/raw/base-desapariciones-dataton-2025.csv
     ```
     *(Si no tienes el archivo, descargalo de la fuente original proporcionada y colócalo en esa ruta antes de continuar).*
 
-3.  **Iniciar los Servicios**
+4.  **Iniciar los Servicios**
     Construye y levanta los contenedores:
     ```bash
     docker-compose up -d --build
     ```
 
-4.  **Ejecutar el Pipeline**
+5.  **Ejecutar el Pipeline**
     *   Abre tu navegador y ve a Airflow: [http://localhost:8080](http://localhost:8080).
     *   Usuario/Contraseña por defecto: `airflow` / `airflow`.
     *   Busca el DAG llamado `desapariciones_pipeline`.
     *   Actívalo (toggle ON) y ejecútalo (botón Play).
 
-5.  **Ver el Dashboard**
+6.  **Ver el Dashboard**
     Una vez que el DAG haya completado sus tareas (especialmente `create_trusted_views` y `setup_db_permissions`), accede al dashboard de visualización:
     *   URL: [http://localhost:5000](http://localhost:5000)
 
 
-## Estructura del Proyecto
+## Resultados del Dashboard
 
-```
-pipeline_missing_kids/
-├── dags/
-│   ├── dashboard/          # Código de la aplicación Flask
-│   │   ├── templates/      # HTML del dashboard
-│   │   └── app.py          # Backend del dashboard
-│   ├── data/raw/           # Directorio de entrada de datos
-│   ├── scripts/            # Scripts Python para tareas ETL
-│   ├── sql/                # Scripts SQL (DDL y Transformaciones)
-│   └── dag.py              # Definición del DAG de Airflow
-├── docker-compose.yaml     # Definición de servicios Docker
-├── Dockerfile              # Imagen personalizada de Airflow
-└── init-scripts/           # Scripts de inicialización de BD
-```
-
-## Resultados
+Debajo se muestran capturas de pantalla del dashboard que visualiza los datos procesados.
 
 ![Dashboard Parte 1](/screenshots/dashboard.png)
 ![Dashboard Parte 2](/screenshots/dashboard-parte2.png)

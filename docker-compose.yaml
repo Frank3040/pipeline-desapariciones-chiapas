@@ -5,7 +5,7 @@ x-airflow-common: &airflow-common
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://$${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}/${POSTGRES_DB}
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
@@ -14,11 +14,11 @@ x-airflow-common: &airflow-common
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
 
-    POSTGRES_HOST: postgres
-    POSTGRES_PORT: 5432
-    POSTGRES_USER: airflow
-    POSTGRES_PASSWORD: airflow
-    POSTGRES_DB: airflow
+    POSTGRES_HOST: ${POSTGRES_HOST}
+    POSTGRES_PORT: ${POSTGRES_PORT}
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    POSTGRES_DB: ${POSTGRES_DB}
     AIRFLOW_CONN_FS_DEFAULT: 'file://'
 
   volumes:
@@ -36,12 +36,12 @@ services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
-      ANALYST_USER: data_analyst
-      ANALYST_PASSWORD: analyst123
-      POSTGRES_MULTIPLE_DATABASES: airflow, desapariciones
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      ANALYST_USER: ${ANALYST_USER}
+      ANALYST_PASSWORD: ${ANALYST_PASSWORD}
+      POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_MULTIPLE_DATABASES}
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
       - ./init-scripts/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh
@@ -214,10 +214,10 @@ services:
     ports:
       - "5000:5000"
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: desapariciones
-      ANALYST_USER: data_analyst
-      ANALYST_PASSWORD: analyst123
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${PROJECT_POSTGRES_DB}
+      ANALYST_USER: ${ANALYST_USER}
+      ANALYST_PASSWORD: ${ANALYST_PASSWORD}
     command: >
       bash -c "pip install -r requirements.txt && python app.py"
     depends_on:
